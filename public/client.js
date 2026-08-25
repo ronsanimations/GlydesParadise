@@ -9,9 +9,13 @@ const chatLog = document.getElementById('chatLog');
 
 let localPlayer = null;
 let otherPlayers = {};
-const keys = { ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false };
-let isTyping = false;
-let gameActive = false;
+// Expand configuration trackers to monitor Arrow keys and WASD inputs simultaneously
+const keys = { 
+    ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false,
+    w: false, s: false, a: false, d: false,
+    W: false, S: false, A: false, D: false // Caps-lock fallback protection
+};
+
 
 const WORLD_WIDTH = 3200;
 const WORLD_HEIGHT = 2400;
@@ -130,15 +134,29 @@ function updateMovement() {
     let moved = false;
     const speed = 5;
 
-    if (keys.ArrowLeft && localPlayer.x > 0) { localPlayer.x -= speed; moved = true; }
-    if (keys.ArrowRight && localPlayer.x < WORLD_WIDTH - 32) { localPlayer.x += speed; moved = true; }
-    if (keys.ArrowUp && localPlayer.y > 0) { localPlayer.y -= speed; moved = true; }
-    if (keys.ArrowDown && localPlayer.y < WORLD_HEIGHT - 32) { localPlayer.y += speed; moved = true; }
+    // Combine tracking layers using simple conditional checks
+    if ((keys.ArrowLeft || keys.a || keys.A) && localPlayer.x > 0) { 
+        localPlayer.x -= speed; 
+        moved = true; 
+    }
+    if ((keys.ArrowRight || keys.d || keys.D) && localPlayer.x < WORLD_WIDTH - 32) { 
+        localPlayer.x += speed; 
+        moved = true; 
+    }
+    if ((keys.ArrowUp || keys.w || keys.W) && localPlayer.y > 0) { 
+        localPlayer.y -= speed; 
+        moved = true; 
+    }
+    if ((keys.ArrowDown || keys.s || keys.S) && localPlayer.y < WORLD_HEIGHT - 32) { 
+        localPlayer.y += speed; 
+        moved = true; 
+    }
 
     if (moved) {
         socket.emit('playerMovement', { x: localPlayer.x, y: localPlayer.y });
     }
 }
+
 
 function updateCamera() {
     if (!localPlayer) return;
