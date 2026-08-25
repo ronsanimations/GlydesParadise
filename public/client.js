@@ -150,20 +150,26 @@ function updateCamera() {
 
 function renderGame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
     ctx.save();
+    // Shifting focus context by camera locations
     ctx.translate(-camera.x, -camera.y);
 
+    // 1. Render green floor layouts and wooden spawns
     drawLargeGrid();
 
+    // 2. Render physical customized character elements
     Object.keys(otherPlayers).forEach((id) => {
         drawCustomCharacter(otherPlayers[id]);
     });
-
     if (localPlayer) {
         drawCustomCharacter(localPlayer);
     }
 
-    ctx.restore();
+    ctx.restore(); // <-- Camera plane transformation closes right here!
+
+    // 3. Pinned Screen Layer: Draw your fixed position locator radar on top of the scene window layout
+    drawRadarMinimap();
 }
 
 // Simple, solid procedural grid lines that can never break or crash loops
@@ -504,3 +510,54 @@ clearPaintBtn.addEventListener('click', () => {
     setupDefaultPaintGrids();
     redrawPaintCanvasPreview();
 });
+
+// Minimap display sizing configuration parameters
+const MINI_WIDTH = 120;
+const MINI_HEIGHT = 90;
+const MINI_PADDING = 15;
+
+function drawRadarMinimap() {
+    if (!localPlayer) return;
+
+    // Pin the minimap bounding box frame perfectly to the top right corner of your 800x600 screen window
+    // Screen resolution is 800 wide, so 800 - 120 - 15 padding puts it at X: 665
+    const miniX = canvas.width - MINI_WIDTH - MINI_PADDING;
+    const miniY = MINI_PADDING;
+
+    // 1. Draw the semi-transparent dark map backdrop
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+    ctx.beginPath();
+    ctx.roundRect(miniX, miniY, MINI_WIDTH, MINI_HEIGHT, 4);
+    ctx.fill();
+    
+    // Add a clean border outline around the map window
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(miniX, miniY, MINI_WIDTH, MINI_HEIGHT);
+
+    // Helper helper function that scales large 3200x2400 coordinates down to the tiny 120x90 radar box
+    function getRadarCoords(worldX, worldY) {
+        return {
+            x: miniX + (worldX / WORLD_WIDTH) * MINI_WIDTH,
+            y: miniY + (worldY / WORLD_HEIGHT) * MINI_HEIGHT
+        };
+    }
+
+    // 2. Plot all external online multiplayer nodes onto the radar matrix
+    Object.keys(otherPlayers).forEach((id) => {
+        const player = otherPlayers[id];
+        const dotPos = getRadarCoords(player.x, player.y);
+        
+        ctx.fillStyle = '#ffffff'; // White dots for other players online
+        ctx.beginPath();
+        ctx.arc(dotPos.x, dotPos.y, 2, 0, Math.PI * 2); // Tiny 2-pixel radius circles
+        ctx.fill();
+    });
+
+    // 3. Plot YOUR local player position node so you know where you look
+    const localDotPos = getRadarCoords(localPlayer.x, localPlayer.y);
+    ctx.fillStyle = '#55ff55'; // Bright neon hacker-green point for "You"
+    ctx.beginPath();
+    ctx.arc(localDotPos.x, localDotPos.y, 3, 0, Math.PI * 2); // Slightly larger 3-pixel tracking indicator dot
+    ctx.fill();
+}
