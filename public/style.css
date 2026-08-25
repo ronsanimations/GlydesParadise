@@ -1,0 +1,211 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #1a1a1a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: sans-serif;
+    overflow: hidden;
+    color: #fff;
+}
+
+/* Character Customizer Overlay Panel Layout */
+#customizer-screen {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    background-color: #111;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+#customizer-box {
+    background-color: #252525;
+    padding: 25px;
+    border-radius: 8px;
+    border: 2px solid #444;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+}
+
+#customizer-box h2 {
+    margin: 0;
+    text-align: center;
+    font-size: 22px;
+    border-bottom: 2px solid #333;
+    padding-bottom: 8px;
+}
+
+#customizer-box h3 {
+    margin: 0 0 5px 0;
+    font-size: 14px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.input-group input {
+    padding: 10px;
+    background: #111;
+    border: 2px solid #444;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 16px;
+}
+
+.control-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+}
+
+/* Style Arrow Toggle Configurations */
+.selector-arrows {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background-color: #111;
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding: 4px;
+}
+
+.selector-arrows button {
+    background: none;
+    border: none;
+    color: #55ff55;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 2px 8px;
+}
+
+.selector-arrows button:hover {
+    color: #fff;
+}
+
+.selector-arrows span {
+    font-family: monospace;
+    font-weight: bold;
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+}
+
+#joinGameBtn {
+    background-color: #55ff55;
+    color: #000;
+    border: none;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+#joinGameBtn:hover {
+    background-color: #33cc33;
+}
+
+/* Main Real-Time Multiplayer Gameplay Interface */
+#ui-wrapper {
+    display: flex;
+    gap: 20px;
+    background-color: #252525;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+}
+
+#game-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#gameCanvas {
+    background-color: #2e2e2e;
+    border: 2px solid #444;
+    border-radius: 4px;
+}
+
+/* Beta Phase Coordinates Overlay */
+#debug-coords {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #55ff55;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 14px;
+    pointer-events: none;
+    z-index: 10;
+    border: 1px solid #333;
+}
+
+/* Scrolling Text Sidebar Chat Elements */
+#chat-bar input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    background-color: #111;
+    border: 2px solid #444;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 16px;
+    outline: none;
+}
+
+#chat-bar input:focus {
+    border-color: #55ff55;
+}
+
+#chat-log-box {
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    background-color: #111;
+    border: 2px solid #444;
+    border-radius: 4px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+#chat-log-box h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 16px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 5px;
+}
+
+#chatLog {
+    flex-grow: 1;
+    overflow-y: auto;
+    font-size: 14px;
+    line-height: 1.4;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    height: 540px;
+}
+
+.chat-msg {
+    word-break: break-all;
+}
