@@ -608,7 +608,27 @@ const customBgMusic = document.getElementById('bgMusicTrack');
 const customAudioMuteBtn = document.getElementById('audioMuteBtn');
 
 // Make sure your exact custom filenames are listed here
-let customPlaylistTracks = ["Latte.mp3"]; 
+// MULTI-TRACK PLAYLIST ARRAY CONFIGURATION
+// FIXED: Expanding your array list matrix to map out all 17 of your custom tracks!
+let customPlaylistTracks = [
+    "Latte.mp3",
+    "328.mp3",
+    "Bubble Tea.mp3",
+    "Frappé.mp3",
+    "Heart of Ice.mp3",
+    "Moonlight.mp3",
+    "Nightfall.mp3",
+    "Pink Lemonade.mp3",
+    "Sakura.mp3",
+    "Snowflake.mp3",
+    "SPOOKITTY.mp3",
+    "Starstruck.mp3",
+    "Sundae.mp3",
+    "Tacocat.mp3",
+    "Til Ya Meow.mp3",
+    "Trick or BASS.mp3",
+    "Yum!.mp3"
+]; 
 let customTrackIndex = 0;
 let customMusicActive = false;
 
