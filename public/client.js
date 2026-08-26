@@ -603,82 +603,125 @@ updateMovement = function() {
     applyMobileVectorMovement();
 };
 
-// MULTI-TRACK PLAYLIST ENGINE FOR CUSTOM MUSIC AUDIO
-const bgMusic = document.getElementById('bgMusicTrack');
-const audioMuteBtn = document.getElementById('audioMuteBtn');
+// DYNAMIC PLYALIST ENGINE (BYPASSES HIDDEN DUPLICATES)
+const customBgMusic = document.getElementById('bgMusicTrack');
+const customAudioMuteBtn = document.getElementById('audioMuteBtn');
 
-// 1. ADD YOUR CUSTOM SONG FILENAMES RIGHT HERE IN THIS LIST CONTAINER!
-// Drop your custom .mp3 files into public/audio/ and list their exact names here
-let playlistTracks = ["track1.mp3", "track2.mp3", "track3.mp3"];
+// Make sure your exact custom filenames are listed here
+let customPlaylistTracks = ["Latte.mp3"]; 
+let customTrackIndex = 0;
+let customMusicActive = false;
 
-let currentTrackIndex = 0;
-let isMusicPlaying = false;
-
-// Randomizes the playlist array order so the game has a mixed radio shuffle layout
-function shufflePlaylist(array) {
+function shuffleCustomPlaylist(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
     }
 }
 
-function loadAndPlayTrack() {
-    if (!bgMusic || playlistTracks.length === 0) return;
+function runDynamicTrackPlayback() {
+    if (!customBgMusic || customPlaylistTracks.length === 0) return;
     
-    // Grab the active filename out of our track listing array matrix
-    const nextSongFile = playlistTracks[currentTrackIndex];
-    bgMusic.src = `/audio/${nextSongFile}`;
-    bgMusic.volume = 0.25; // Sets the music to a comfortable 25% background volume level
+    const targetFile = customPlaylistTracks[customTrackIndex];
+    customBgMusic.src = `/audio/${targetFile}`;
+    customBgMusic.volume = 0.25;
     
-    bgMusic.play()
+    let displayTrackName = targetFile.replace('.mp3', '');
+    displayTrackName = displayTrackName.charAt(0).toUpperCase() + displayTrackName.slice(1);
+    
+    customBgMusic.play()
         .then(() => {
-            isMusicPlaying = true;
-            if (audioMuteBtn) audioMuteBtn.innerText = `🔊 Playing: Track ${currentTrackIndex + 1}`;
+            customMusicActive = true;
+            if (customAudioMuteBtn) customAudioMuteBtn.innerText = `🔊 Playing: ${displayTrackName}`;
         })
         .catch(err => {
-            // Catches standard browser auto-play blocker policies cleanly
-            console.log("Audio autoplay restricted. Awaiting a physical click on the mute button.");
-            isMusicPlaying = false;
-            if (audioMuteBtn) audioMuteBtn.innerText = "🎵 Music: OFF";
+            console.log("Autoplay restricted. Awaiting a physical button tap.");
+            customMusicActive = false;
+            if (customAudioMuteBtn) customAudioMuteBtn.innerText = "🎵 Music: OFF";
         });
 }
 
-// Automatically jumps to the next song in line the exact second the active track ends
-if (bgMusic) {
-    bgMusic.addEventListener('ended', () => {
-        currentTrackIndex++;
-        // Wrap back around to the first song and re-shuffle if we reach the end of the list array
-        if (currentTrackIndex >= playlistTracks.length) {
-            currentTrackIndex = 0;
-            shufflePlaylist(playlistTracks);
+if (customBgMusic) {
+    customBgMusic.addEventListener('ended', () => {
+        customTrackIndex++;
+        if (customTrackIndex >= customPlaylistTracks.length) {
+            customTrackIndex = 0;
+            shuffleCustomPlaylist(customPlaylistTracks);
         }
-        loadAndPlayTrack();
+        runDynamicTrackPlayback();
     });
 }
 
-function startGameMusicLoop() {
-    if (playlistTracks.length === 0) return;
-    shufflePlaylist(playlistTracks); // Mix up track order on start
-    currentTrackIndex = 0;
-    loadAndPlayTrack();
+function bootUpParadiseSoundtrack() {
+    if (customPlaylistTracks.length === 0) return;
+    shuffleCustomPlaylist(customPlaylistTracks);
+    customTrackIndex = 0;
+    runDynamicTrackPlayback();
 }
 
-// Global button toggle handler wired straight to your index.html onclick properties
+// Intercepts the HTML button click action directly, bypassing the old toggleBackgroundMusic copies
 window.toggleBackgroundMusic = function() {
-    if (!bgMusic) return;
+    if (!customBgMusic || customPlaylistTracks.length === 0) return;
     
-    if (isMusicPlaying) {
-        bgMusic.pause();
-        isMusicPlaying = false;
-        if (audioMuteBtn) audioMuteBtn.innerText = "🎵 Music: OFF";
+    if (customMusicActive) {
+        customBgMusic.pause();
+        customMusicActive = false;
+        if (customAudioMuteBtn) customAudioMuteBtn.innerText = "🎵 Music: OFF";
     } else {
-        // Boot up the playlist stream if it hasn't loaded any track file source yet
-        if (!bgMusic.src) {
-            startGameMusicLoop();
+        if (!customBgMusic.src) {
+            bootUpParadiseSoundtrack();
         } else {
-            bgMusic.play();
-            isMusicPlaying = true;
-            if (audioMuteBtn) audioMuteBtn.innerText = `🔊 Playing: Track ${currentTrackIndex + 1}`;
+            customBgMusic.play();
+            customMusicActive = true;
+            
+            const currentFile = customPlaylistTracks[customTrackIndex];
+            let displayTrackName = currentFile.replace('.mp3', '');
+            displayTrackName = displayTrackName.charAt(0).toUpperCase() + displayTrackName.slice(1);
+            
+            if (customAudioMuteBtn) customAudioMuteBtn.innerText = `🔊 Playing: ${displayTrackName}`;
+        }
+    }
+};
+
+// FIXED: Changed old bgMusic variable references to use your new customBgMusic engine
+if (customBgMusic) {
+    customBgMusic.addEventListener('ended', () => {
+        customTrackIndex++;
+        if (customTrackIndex >= customPlaylistTracks.length) {
+            customTrackIndex = 0;
+            shuffleCustomPlaylist(customPlaylistTracks);
+        }
+        runDynamicTrackPlayback(); // Calls your fresh name rendering function
+    });
+}
+
+// FIXED: Swapped out the old template function to use your new custom playlist properties
+function startGameMusicLoop() {
+    if (customPlaylistTracks.length === 0) return;
+    shuffleCustomPlaylist(customPlaylistTracks);
+    customTrackIndex = 0;
+    runDynamicTrackPlayback();
+}
+
+window.toggleBackgroundMusic = function() {
+    if (!customBgMusic || customPlaylistTracks.length === 0) return;
+    
+    if (customMusicActive) {
+        customBgMusic.pause();
+        customMusicActive = false;
+        if (customAudioMuteBtn) customAudioMuteBtn.innerText = "🎵 Music: OFF";
+    } else {
+        if (!customBgMusic.src) {
+            bootUpParadiseSoundtrack();
+        } else {
+            customBgMusic.play();
+            customMusicActive = true;
+            
+            const currentFile = customPlaylistTracks[customTrackIndex];
+            let displayTrackName = currentFile.replace('.mp3', '');
+            displayTrackName = displayTrackName.charAt(0).toUpperCase() + displayTrackName.slice(1);
+            
+            if (customAudioMuteBtn) customAudioMuteBtn.innerText = `🔊 Playing: ${displayTrackName}`;
         }
     }
 };
