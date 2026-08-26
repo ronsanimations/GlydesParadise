@@ -2,14 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Glyde's Paradise Prototype</title>
+    <!-- Critical tag to prevent smartphones from shrinking the page -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Glyde's Paradise</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Combined Character Preview Paint Studio -->
+    <!-- Character Design Studio Overlay Panel -->
     <div id="customizer-screen">
-        <div id="customizer-box" style="width: 520px;">
+        <div id="customizer-box">
             <h2>Character Design Studio</h2>
             
             <div class="input-group">
@@ -17,9 +18,9 @@
                 <input type="text" id="usernameInput" value="New Glyder" maxlength="32">
             </div>
 
-            <div style="display: flex; gap: 20px; margin-top: 15px;">
-                <!-- Left Control Column: Hair, Body, Shirt Selection Arrows -->
-                <div style="flex: 1; display: flex; flex-direction: column; gap: 15px;">
+            <div class="customizer-split-layout">
+                <!-- Left Control Column: Sliders -->
+                <div class="customizer-left">
                     <div class="control-row">
                         <label>Body Style:</label>
                         <div class="selector-arrows">
@@ -46,8 +47,8 @@
                     </div>
 
                     <div style="margin-top: 5px;">
-                        <label style="font-size: 13px; display: block; margin-bottom: 5px;">Paint Layer Brush:</label>
-                        <select id="paintLayerSelect" style="width: 100%; padding: 6px; background: #111; color: #55ff55; border: 1px solid #444; border-radius: 4px; font-weight: bold; cursor: pointer;">
+                        <label style="font-size: 13px; display: block; margin-bottom: 4px;">Paint Layer Brush:</label>
+                        <select id="paintLayerSelect">
                             <option value="body">Paint Body Layer</option>
                             <option value="hair">Paint Hair Layer</option>
                             <option value="shirt">Paint Shirt Layer</option>
@@ -55,33 +56,43 @@
                     </div>
                 </div>
 
-                <!-- Right Preview Column: Direct Paint Canvas Window -->
-                <div style="flex: 1; background: #1a1a1a; padding: 15px; border-radius: 6px; border: 1px solid #333; display: flex; flex-direction: column; align-items: center; gap: 10px;">
-                    <span style="font-size: 12px; color: #888; font-weight: bold;">PAINT DIRECTLY ON CHARACTER</span>
-                    
-                    <canvas id="paintCanvas" width="160" height="160" style="background-color: #222; border: 2px solid #55ff55; cursor: crosshair; image-rendering: pixelated; box-shadow: inset 0 0 10px rgba(0,0,0,0.8);"></canvas>
-                    
-                    <div style="display: flex; gap: 10px; width: 100%; justify-content: center; align-items: center;">
-                        <input type="color" id="brushColorPicker" value="#ffffff" style="width: 50px; height: 32px; border: none; cursor: pointer; background: none;">
-                        <button id="clearPaintBtn" style="background: #ff5555; color: #000; border: none; padding: 6px 12px; font-weight: bold; font-size: 12px; border-radius: 4px; cursor: pointer; flex-grow: 1;">Reset Textures</button>
+                <!-- Right Preview Column: Canvas -->
+                <div class="customizer-right">
+                    <span style="font-size: 11px; color: #888; font-weight: bold;">PAINT ON CHARACTER</span>
+                    <canvas id="paintCanvas" width="128" height="128"></canvas>
+                    <div class="paint-btn-row">
+                        <input type="color" id="brushColorPicker" value="#ffffff">
+                        <button id="clearPaintBtn">Reset</button>
                     </div>
                 </div>
             </div>
 
-            <button id="joinGameBtn" style="margin-top: 20px;">Enter Glyde's Paradise</button>
+            <button id="joinGameBtn">Enter Glyde's Paradise</button>
         </div>
     </div>
 
-    <!-- Main Game UI Layout (Hidden initially) -->
+    <!-- Main Game UI Layout -->
     <div id="ui-wrapper" style="display: none;">
         <div id="game-container">
-            <!-- Pinned coordinate container panel for beta testing -->
             <div id="debug-coords">Position - X: 0, Y: 0</div>
+            
+            <!-- Mobile Toggle Buttons for UI Overlay Controls -->
+            <button id="mobileChatToggleBtn" onclick="toggleMobileChat()">💬 Toggle Chat Log</button>
+            
             <canvas id="gameCanvas" width="800" height="600"></canvas>
+            
             <div id="chat-bar">
-                <input type="text" id="chatInput" placeholder="Press Enter to chat..." maxlength="60" autocomplete="off">
+                <input type="text" id="chatInput" placeholder="Tap here or press Enter to chat..." maxlength="60" autocomplete="off">
+            </div>
+
+            <!-- Virtual Touch Joystick overlay (Pops up automatically on touch devices) -->
+            <div id="joystick-zone">
+                <div id="joystick-base">
+                    <div id="joystick-stick"></div>
+                </div>
             </div>
         </div>
+        
         <div id="chat-log-box">
             <h3>Server Chat</h3>
             <div id="chatLog"></div>
