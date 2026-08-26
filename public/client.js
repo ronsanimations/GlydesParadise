@@ -629,6 +629,7 @@ let customPlaylistTracks = [
     "Trick or BASS.mp3",
     "Yum!.mp3"
     "Headpats.mp3"
+    "Mystical.mp3"
 ]; 
 let customTrackIndex = 0;
 let customMusicActive = false;
