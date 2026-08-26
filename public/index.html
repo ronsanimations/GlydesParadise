@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- Critical tag to prevent smartphones from shrinking the page -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Glyde's Paradise</title>
     <link rel="stylesheet" href="style.css">
@@ -24,25 +23,25 @@
                     <div class="control-row">
                         <label>Body Style:</label>
                         <div class="selector-arrows">
-                            <button onclick="changeStyle('bodyStyle', -1)">◀</button>
+                            <button type="button" onclick="changeStyle('bodyStyle', -1)">◀</button>
                             <span id="bodyStyleDisplay">1</span>
-                            <button onclick="changeStyle('bodyStyle', 1)">▶</button>
+                            <button type="button" onclick="changeStyle('bodyStyle', 1)">▶</button>
                         </div>
                     </div>
                     <div class="control-row">
                         <label>Hair Style:</label>
                         <div class="selector-arrows">
-                            <button onclick="changeStyle('hairStyle', -1)">◀</button>
+                            <button type="button" onclick="changeStyle('hairStyle', -1)">◀</button>
                             <span id="hairStyleDisplay">1</span>
-                            <button onclick="changeStyle('hairStyle', 1)">▶</button>
+                            <button type="button" onclick="changeStyle('hairStyle', 1)">▶</button>
                         </div>
                     </div>
                     <div class="control-row">
                         <label>Shirt Style:</label>
                         <div class="selector-arrows">
-                            <button onclick="changeStyle('shirtStyle', -1)">◀</button>
+                            <button type="button" onclick="changeStyle('shirtStyle', -1)">◀</button>
                             <span id="shirtStyleDisplay">1</span>
-                            <button onclick="changeStyle('shirtStyle', 1)">▶</button>
+                            <button type="button" onclick="changeStyle('shirtStyle', 1)">▶</button>
                         </div>
                     </div>
 
@@ -62,12 +61,12 @@
                     <canvas id="paintCanvas" width="128" height="128"></canvas>
                     <div class="paint-btn-row">
                         <input type="color" id="brushColorPicker" value="#ffffff">
-                        <button id="clearPaintBtn">Reset</button>
+                        <button type="button" id="clearPaintBtn">Reset</button>
                     </div>
                 </div>
             </div>
 
-            <button id="joinGameBtn">Enter Glyde's Paradise</button>
+            <button type="button" id="joinGameBtn">Enter Glyde's Paradise</button>
         </div>
     </div>
 
@@ -76,20 +75,24 @@
         <div id="game-container">
             <div id="debug-coords">Position - X: 0, Y: 0</div>
             
-            <!-- Mobile Toggle Buttons for UI Overlay Controls -->
-            <button id="mobileChatToggleBtn" onclick="toggleMobileChat()">💬 Toggle Chat Log</button>
+            <button type="button" id="mobileChatToggleBtn" onclick="toggleMobileChat()">💬 Toggle Chat Log</button>
             
-            <canvas id="gameCanvas" width="800" height="600"></canvas>
+            <!-- Canvas Resolution -->
+            <canvas id="gameCanvas" width="800" height="700"></canvas>
             
-            <div id="chat-bar">
-                <input type="text" id="chatInput" placeholder="Tap here or press Enter to chat..." maxlength="60" autocomplete="off">
-            </div>
+            <form id="chatForm" onsubmit="handleChatSubmit(event)">
+                <input type="text" id="chatInput" placeholder="Press Enter or tap Send..." maxlength="60" autocomplete="off">
+                <button type="submit" id="chatSendBtn">Send</button>
+            </form>
 
-            <!-- Virtual Touch Joystick overlay (Pops up automatically on touch devices) -->
-            <div id="joystick-zone">
-                <div id="joystick-base">
-                    <div id="joystick-stick"></div>
+            <!-- Bottom Controller Bar (Dedicated zone below the playing field) -->
+            <div id="mobile-controls-bar">
+                <div id="joystick-zone">
+                    <div id="joystick-base">
+                        <div id="joystick-stick"></div>
+                    </div>
                 </div>
+                <div id="mobile-hint">Drag circle to move</div>
             </div>
         </div>
         
