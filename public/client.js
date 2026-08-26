@@ -53,6 +53,13 @@ window.changeStyle = function(category, direction) {
     }
 };
 
+// Block document-level pull-to-refresh and rubber-band scrolling on touch devices
+document.addEventListener('touchmove', (e) => {
+    if (isDrawingOnCanvas || joystickActive) {
+        e.preventDefault();
+    }
+}, { passive: false });
+
 // Form submission to start game and cache character locally
 joinGameBtn.addEventListener('click', () => {
     const usernameField = document.getElementById('usernameInput').value.trim() || "Glyder";
