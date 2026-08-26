@@ -11,7 +11,6 @@
     <div id="customizer-screen">
         <div id="customizer-box">
             <h2>Character Design Studio</h2>
-            
             <div class="input-group">
                 <label for="usernameInput">Character Name:</label>
                 <input type="text" id="usernameInput" value="New Glyder" maxlength="32">
@@ -44,7 +43,6 @@
                             <button type="button" onclick="changeStyle('shirtStyle', 1)">▶</button>
                         </div>
                     </div>
-
                     <div style="margin-top: 5px;">
                         <label style="font-size: 13px; display: block; margin-bottom: 4px;">Paint Layer Brush:</label>
                         <select id="paintLayerSelect">
@@ -65,7 +63,6 @@
                     </div>
                 </div>
             </div>
-
             <button type="button" id="joinGameBtn">Enter Glyde's Paradise</button>
         </div>
     </div>
@@ -73,10 +70,16 @@
     <!-- Main Game UI Layout -->
     <div id="ui-wrapper" style="display: none;">
         <div id="game-container">
-            <!--this nect line is for dev cords, enable for knowing location in x and y-->
-<!--          <div id="debug-coords">Position - X: 0, Y: 0</div> -->
-          <!--just inbetween these comments is the code-->
+            <!-- Pinned Audio Soundtrack Control Button Layer -->
+            <button type="button" id="audioMuteBtn" onclick="toggleBackgroundMusic()" style="position: absolute; top: 10px; right: 15px; z-index: 20; background: rgba(0,0,0,0.7); color: #55ff55; border: 1px solid #444; padding: 6px 12px; font-size: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">🎵 Music: OFF</button>
             
+            <!-- Dynamic Single-Audio Receiver Node injector for Multi-Track Loops -->
+            <audio id="bgMusicTrack"></audio>
+
+            <!--this nect line is for dev cords, enable for knowing location in x and y-->
+            <!-- <div id="debug-coords">Position - X: 0, Y: 0</div> -->
+            
+            <!--just inbetween these comments is the code-->
             <button type="button" id="mobileChatToggleBtn" onclick="toggleMobileChat()">💬 Toggle Chat Log</button>
             
             <!-- Canvas Resolution -->
@@ -97,7 +100,7 @@
                 <div id="mobile-hint">Drag circle to move</div>
             </div>
         </div>
-        
+
         <div id="chat-log-box">
             <h3>Server Chat</h3>
             <div id="chatLog"></div>
