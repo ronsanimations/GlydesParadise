@@ -122,6 +122,18 @@ window.addEventListener('keyup', (e) => {
 chatInput.addEventListener('focus', () => { isTyping = true; });
 chatInput.addEventListener('blur', () => { isTyping = false; });
 
+// Locate the chat form wrapper element if it exists in your index.html
+const chatForm = chatInput.closest('form') || document.getElementById('chat-bar');
+
+if (chatForm) {
+    // Intercept the submission event on mobile tap/submit actions
+    chatForm.addEventListener('submit', (e) => {
+        // STOP THE PHONE FROM REFRESHING THE PAGE!
+        e.preventDefault();
+        sendChatMessage();
+    });
+}
+
 // Multiplayer socket event syncing
 socket.on('currentPlayers', (players) => {
     Object.keys(players).forEach((id) => {
