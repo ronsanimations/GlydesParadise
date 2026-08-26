@@ -1,14 +1,16 @@
-body {
+html, body {
     margin: 0;
     padding: 0;
-    background-color: #121212;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: fixed; /* Completely locks the viewport on iOS and Android */
+    touch-action: none !important;
+    -webkit-overflow-scrolling: auto;
+    overscroll-behavior: none !important;
+    background-color: #1a1a1a;
     font-family: sans-serif;
     color: #fff;
-    touch-action: manipulation;
 }
 
 #customizer-screen {
