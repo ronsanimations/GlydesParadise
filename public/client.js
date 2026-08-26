@@ -1,4 +1,7 @@
-const socket = io();
+const socket = io({
+    transports: ['websocket', 'polling']
+});
+
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const customizerScreen = document.getElementById('customizer-screen');
@@ -10,14 +13,14 @@ const chatLog = document.getElementById('chatLog');
 let localPlayer = null;
 let otherPlayers = {};
 
-// FIXED: Added back your dual keyboard layout trackers mapping WASD + Arrows
+// Unified control layout trackers supporting Arrow keys and WASD
 const keys = { 
     ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false,
     w: false, s: false, a: false, d: false,
     W: false, S: false, A: false, D: false
 };
 
-// FIXED: Re-declared missing state controllers to prevent ReferenceErrors
+// Core synchronization status variables
 let isTyping = false;
 let gameActive = false;
 
@@ -26,9 +29,10 @@ const WORLD_HEIGHT = 2400;
 const camera = { x: 0, y: 0 };
 const TILE_SIZE = 64;
 
-// Mobile responsive UI panel layouts drawer toggle helper
+// Mobile responsive UI sidebar drawer toggle helper
 window.toggleMobileChat = function() {
     const box = document.getElementById('chat-log-box');
+    if (!box) return;
     box.style.display = (box.style.display === 'block') ? 'none' : 'block';
 };
 
@@ -41,11 +45,15 @@ window.changeStyle = function(category, direction) {
     if (nextVal < 1) nextVal = MAX_STYLES[category];
     if (nextVal > MAX_STYLES[category]) nextVal = 1;
     currentCustomStyles[category] = nextVal;
-    document.getElementById(`${category}Display`).innerText = nextVal;
-    redrawPaintCanvasPreview(); // Re-render preview instantly when styles change
+    
+    const displayEl = document.getElementById(`${category}Display`);
+    if (displayEl) displayEl.innerText = nextVal;
+    if (typeof redrawPaintCanvasPreview === 'function') {
+        redrawPaintCanvasPreview();
+    }
 };
 
-// Form submission handler: Packages and saves design locally
+// Form submission to start game and cache character locally
 joinGameBtn.addEventListener('click', () => {
     const usernameField = document.getElementById('usernameInput').value.trim() || "Glyder";
 
@@ -59,7 +67,6 @@ joinGameBtn.addEventListener('click', () => {
         shirtTexture: multiLayerTextures.shirt
     };
 
-    // Auto-save design profile to browser hard drive memory
     const savePackage = {
         username: usernameField,
         styles: currentCustomStyles,
@@ -73,16 +80,27 @@ joinGameBtn.addEventListener('click', () => {
     socket.emit('joinGame', customData);
 });
 
-// Keyboard event key down listeners supporting dual control methods
+// Fixed Chat Message Dispatcher for both Desktop and Mobile
+function sendChatMessage() {
+    const msg = chatInput.value.trim();
+    if (msg.length > 0) {
+        socket.emit('sendMessage', msg);
+    }
+    chatInput.value = '';
+    chatInput.blur();
+    isTyping = false;
+}
+
+// Keyboard input listeners
 window.addEventListener('keydown', (e) => {
     if (!gameActive) return;
+    
     if (e.key === 'Enter') {
+        // STOP THE BROWSER FROM REFRESHING THE PAGE!
+        e.preventDefault(); 
+        
         if (isTyping) {
-            const msg = chatInput.value.trim();
-            if (msg.length > 0) socket.emit('sendMessage', msg);
-            chatInput.value = '';
-            chatInput.blur();
-            isTyping = false;
+            sendChatMessage();
         } else {
             chatInput.focus();
             isTyping = true;
@@ -90,14 +108,21 @@ window.addEventListener('keydown', (e) => {
         }
         return;
     }
-    if (!isTyping && e.key in keys) keys[e.key] = true;
+    
+    if (!isTyping && e.key in keys) {
+        keys[e.key] = true;
+    }
 });
 
 window.addEventListener('keyup', (e) => {
     if (e.key in keys) keys[e.key] = false;
 });
 
-// Synchronize all multi-user database assets across connections
+// Chat input focus tracking to prevent movement interference
+chatInput.addEventListener('focus', () => { isTyping = true; });
+chatInput.addEventListener('blur', () => { isTyping = false; });
+
+// Multiplayer socket event syncing
 socket.on('currentPlayers', (players) => {
     Object.keys(players).forEach((id) => {
         if (id === socket.id) {
@@ -129,21 +154,27 @@ socket.on('incomingMessage', (data) => {
     if (targetPlayer) {
         const msgElement = document.createElement('div');
         msgElement.className = 'chat-msg';
-        msgElement.innerHTML = `<span style="color:${targetPlayer.colors.body}; font-weight:bold;">${targetPlayer.username}:</span> ${data.text}`;
+        msgElement.innerHTML = `<span style="color:#55ff55; font-weight:bold;">${targetPlayer.username}:</span> ${data.text}`;
         chatLog.appendChild(msgElement);
         chatLog.scrollTop = chatLog.scrollHeight;
-        targetPlayer.activeChat = { text: data.text, expiresAt: Date.now() + 5000 };
+        
+        targetPlayer.activeChat = { 
+            text: data.text, 
+            expiresAt: Date.now() + 5000 
+        };
     }
 });
 
-// Central Engine Runtime Update Loops
 function gameLoop() {
     updateMovement();
     updateCamera();
     renderGame();
     
     if (localPlayer) {
-        document.getElementById('debug-coords').innerText = `Position - X: ${Math.floor(localPlayer.x)}, Y: ${Math.floor(localPlayer.y)}`;
+        const debugEl = document.getElementById('debug-coords');
+        if (debugEl) {
+            debugEl.innerText = `Position - X: ${Math.floor(localPlayer.x)}, Y: ${Math.floor(localPlayer.y)}`;
+        }
     }
     
     requestAnimationFrame(gameLoop);
@@ -188,8 +219,6 @@ function renderGame() {
     }
 
     ctx.restore();
-    
-    // Draw pinned screen layer radar minimap on top of viewport boundaries
     drawRadarMinimap();
 }
 
@@ -217,7 +246,7 @@ function drawLargeGrid() {
                     }
                 }
                 else if (x >= 1312 && x < 1888 && y >= 912 && y < 1488) {
-                    ctx.fillStyle = '#8b5a2b'; // 9x9 Wood Square Spawn Courtyard
+                    ctx.fillStyle = '#8b5a2b';
                     ctx.fillRect(x, y, gridSize, gridSize);
                     ctx.strokeStyle = '#5c3a1a';
                     ctx.strokeRect(x, y, gridSize, gridSize);
@@ -301,6 +330,10 @@ function drawBubble(playerObj) {
     ctx.fillText(playerObj.activeChat.text, bubbleX + 8, bubbleY + 18);
 }
 
+const MINI_WIDTH = 120;
+const MINI_HEIGHT = 90;
+const MINI_PADDING = 15;
+
 function drawRadarMinimap() {
     if (!localPlayer) return;
     const miniX = canvas.width - MINI_WIDTH - MINI_PADDING;
@@ -323,8 +356,8 @@ function drawRadarMinimap() {
     ctx.fillStyle = '#55ff55'; ctx.beginPath(); ctx.arc(localDotPos.x, localDotPos.y, 3, 0, Math.PI * 2); ctx.fill();
 }
 
+// Multi-layer Texture Painting Studio Setup
 const PAINT_GRID_SIZE = 8;
-const MINI_WIDTH = 120; const MINI_HEIGHT = 90; const MINI_PADDING = 15;
 let multiLayerTextures = { body: [], hair: [], shirt: [] };
 let isDrawingOnCanvas = false;
 
@@ -334,18 +367,28 @@ function setupDefaultPaintGrids() {
         try {
             const parsed = JSON.parse(savedData);
             currentCustomStyles = parsed.styles || { bodyStyle: 1, hairStyle: 1, shirtStyle: 1 };
-            document.getElementById(`bodyStyleDisplay`).innerText = currentCustomStyles.bodyStyle;
-            document.getElementById(`hairStyleDisplay`).innerText = currentCustomStyles.hairStyle;
-            document.getElementById(`shirtStyleDisplay`).innerText = currentCustomStyles.shirtStyle;
+            
+            const bD = document.getElementById('bodyStyleDisplay');
+            const hD = document.getElementById('hairStyleDisplay');
+            const sD = document.getElementById('shirtStyleDisplay');
+            if (bD) bD.innerText = currentCustomStyles.bodyStyle;
+            if (hD) hD.innerText = currentCustomStyles.hairStyle;
+            if (sD) sD.innerText = currentCustomStyles.shirtStyle;
+            
             multiLayerTextures = parsed.textures;
-            document.getElementById('usernameInput').value = parsed.username || "New Glyder";
+            const uInput = document.getElementById('usernameInput');
+            if (uInput) uInput.value = parsed.username || "New Glyder";
             return;
         } catch (e) { console.error(e); }
     }
     for (let r = 0; r < PAINT_GRID_SIZE; r++) {
         let bRow = [], hRow = [], sRow = [];
-        for (let c = 0; c < PAINT_GRID_SIZE; c++) { bRow.push('#ff5555'); hRow.push('#4a2c00'); sRow.push('#5555ff'); }
-        multiLayerTextures.body.push(bRow); multiLayerTextures.hair.push(hRow); multiLayerTextures.shirt.push(sRow);
+        for (let c = 0; c < PAINT_GRID_SIZE; c++) { 
+            bRow.push('#ff5555'); hRow.push('#4a2c00'); sRow.push('#5555ff'); 
+        }
+        multiLayerTextures.body.push(bRow);
+        multiLayerTextures.hair.push(hRow);
+        multiLayerTextures.shirt.push(sRow);
     }
 }
 setupDefaultPaintGrids();
@@ -357,19 +400,27 @@ const brushColorPicker = document.getElementById('brushColorPicker');
 const clearPaintBtn = document.getElementById('clearPaintBtn');
 
 function redrawPaintCanvasPreview() {
-    const pWidth = paintCanvas.width; const pHeight = paintCanvas.height; const pixelScale = pWidth / PAINT_GRID_SIZE;
+    if (!paintCanvas) return;
+    const pWidth = paintCanvas.width;
+    const pHeight = paintCanvas.height;
+    const pixelScale = pWidth / PAINT_GRID_SIZE;
+    
     pCtx.clearRect(0, 0, pWidth, pHeight);
-    const bStyle = currentCustomStyles.bodyStyle; const hStyle = currentCustomStyles.hairStyle; const sStyle = currentCustomStyles.shirtStyle;
+    const bStyle = currentCustomStyles.bodyStyle;
+    const hStyle = currentCustomStyles.hairStyle;
+    const sStyle = currentCustomStyles.shirtStyle;
 
     function drawPreviewLayer(grid, clipCondition) {
         if (!grid) return;
         for (let r = 0; r < 8; r++) {
             for (let c = 0; c < 8; c++) {
                 if (clipCondition && !clipCondition(r, c)) continue;
-                pCtx.fillStyle = grid[r][c]; pCtx.fillRect(c * pixelScale, r * pixelScale, pixelScale, pixelScale);
+                pCtx.fillStyle = grid[r][c];
+                pCtx.fillRect(c * pixelScale, r * pixelScale, pixelScale, pixelScale);
             }
         }
     }
+    
     drawPreviewLayer(multiLayerTextures.body, (r, c) => bStyle === 2 ? (c >= 1 && c <= 6) : true);
     drawPreviewLayer(multiLayerTextures.shirt, (r, c) => {
         const isSlimX = bStyle === 2 ? (c >= 1 && c <= 6) : true;
@@ -382,7 +433,10 @@ function redrawPaintCanvasPreview() {
         if (hStyle === 3) return (r < 1 || (r === 1 && (c === 1 || c === 3 || c === 5 || c === 6)));
         return (r < 2);
     });
-    if (hStyle === 4) { pCtx.fillStyle = '#ffdf00'; pCtx.fillRect(0, 4 * pixelScale, pWidth, 2 * (pixelScale / 4)); }
+    if (hStyle === 4) { 
+        pCtx.fillStyle = '#ffdf00'; 
+        pCtx.fillRect(0, 4 * pixelScale, pWidth, 2 * (pixelScale / 4)); 
+    }
 }
 redrawPaintCanvasPreview();
 
@@ -391,70 +445,66 @@ function handlePaintMove(e) {
     const pixelScale = paintCanvas.width / PAINT_GRID_SIZE;
     const colIdx = Math.floor((e.clientX - rect.left) / pixelScale);
     const rowIdx = Math.floor((e.clientY - rect.top) / pixelScale);
+    
     if (colIdx >= 0 && colIdx < PAINT_GRID_SIZE && rowIdx >= 0 && rowIdx < PAINT_GRID_SIZE) {
         multiLayerTextures[paintLayerSelect.value][rowIdx][colIdx] = brushColorPicker.value;
         redrawPaintCanvasPreview();
     }
 }
 
-paintCanvas.addEventListener('mousedown', (e) => { isDrawingOnCanvas = true; handlePaintMove(e); });
-window.addEventListener('mouseup', () => { isDrawingOnCanvas = false; });
-paintCanvas.addEventListener('mousemove', (e) => { if (isDrawingOnCanvas) handlePaintMove(e); });
-paintLayerSelect.addEventListener('change', redrawPaintCanvasPreview);
-clearPaintBtn.addEventListener('click', () => { setupDefaultPaintGrids(); redrawPaintCanvasPreview(); });
+if (paintCanvas) {
+    paintCanvas.addEventListener('mousedown', (e) => { isDrawingOnCanvas = true; handlePaintMove(e); });
+    window.addEventListener('mouseup', () => { isDrawingOnCanvas = false; });
+    paintCanvas.addEventListener('mousemove', (e) => { if (isDrawingOnCanvas) handlePaintMove(e); });
+}
+if (paintLayerSelect) paintLayerSelect.addEventListener('change', redrawPaintCanvasPreview);
+if (clearPaintBtn) clearPaintBtn.addEventListener('click', () => { setupDefaultPaintGrids(); redrawPaintCanvasPreview(); });
 
-// Virtual Touch Joystick Mathematics Engine
+// Positioned Virtual Touch Joystick Engine (Below Game Screen layout)
 let joystickActive = false;
 let joystickStartPos = { x: 0, y: 0 };
-let mobileVector = { x: 0, y: 0 }; // Stores mobile walking speeds (-1 to 1)
+let mobileVector = { x: 0, y: 0 };
 
 const joyZone = document.getElementById('joystick-zone');
 const joyBase = document.getElementById('joystick-base');
 const joyStick = document.getElementById('joystick-stick');
 
-joyBase.addEventListener('touchstart', (e) => {
-    joystickActive = true;
-    const touch = e.touches[0];
-    const rect = joyBase.getBoundingClientRect();
-    // Establish absolute center of our joystick circle
-    joystickStartPos = {
-        x: rect.left + rect.width / 2,
-        y: rect.top + rect.height / 2
-    };
-});
+if (joyBase) {
+    joyBase.addEventListener('touchstart', (e) => {
+        joystickActive = true;
+        const rect = joyBase.getBoundingClientRect();
+        joystickStartPos = {
+            x: rect.left + rect.width / 2,
+            y: rect.top + rect.height / 2
+        };
+    });
 
-window.addEventListener('touchmove', (e) => {
-    if (!joystickActive) return;
-    
-    const touch = e.touches[0];
-    // Calculate distance between touch finger point and stick anchor center
-    let deltaX = touch.clientX - joystickStartPos.x;
-    let deltaY = touch.clientY - joystickStartPos.y;
-    let distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-    
-    const maxRadius = 40; // Pixels thumb stick can stretch outward
-    if (distance > maxRadius) {
-        deltaX = (deltaX / distance) * maxRadius;
-        deltaY = (deltaY / distance) * maxRadius;
-        distance = maxRadius;
-    }
-    
-    // Visually shift thumb-stick circle via CSS transformations
-    joyStick.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-    
-    // Normalize vectors between -1.0 and 1.0 for player movement
-    mobileVector.x = deltaX / maxRadius;
-    mobileVector.y = deltaY / maxRadius;
-});
+    window.addEventListener('touchmove', (e) => {
+        if (!joystickActive) return;
+        const touch = e.touches[0];
+        let deltaX = touch.clientX - joystickStartPos.x;
+        let deltaY = touch.clientY - joystickStartPos.y;
+        let distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        
+        const maxRadius = 40;
+        if (distance > maxRadius) {
+            deltaX = (deltaX / distance) * maxRadius;
+            deltaY = (deltaY / distance) * maxRadius;
+        }
+        
+        if (joyStick) joyStick.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+        mobileVector.x = deltaX / maxRadius;
+        mobileVector.y = deltaY / maxRadius;
+    });
 
-window.addEventListener('touchend', () => {
-    if (!joystickActive) return;
-    joystickActive = false;
-    joyStick.style.transform = 'translate(0px, 0px)'; // Snap center back
-    mobileVector = { x: 0, y: 0 }; // Freeze movement instantly
-});
+    window.addEventListener('touchend', () => {
+        if (!joystickActive) return;
+        joystickActive = false;
+        if (joyStick) joyStick.style.transform = 'translate(0px, 0px)';
+        mobileVector = { x: 0, y: 0 };
+    });
+}
 
-// Update updateMovement function automatically inside update clock loop thread
 function applyMobileVectorMovement() {
     if (!localPlayer || isTyping || (mobileVector.x === 0 && mobileVector.y === 0)) return;
     
@@ -462,7 +512,6 @@ function applyMobileVectorMovement() {
     localPlayer.x += mobileVector.x * baseSpeed;
     localPlayer.y += mobileVector.y * baseSpeed;
     
-    // Restrict movement within map boundaries
     localPlayer.x = Math.max(0, Math.min(WORLD_WIDTH - 32, localPlayer.x));
     localPlayer.y = Math.max(0, Math.min(WORLD_HEIGHT - 32, localPlayer.y));
     
@@ -470,8 +519,8 @@ function applyMobileVectorMovement() {
 }
 
 // Intercept original movement thread loop to run our touch physics equations
-const oldUpdateMovement = updateMovement;
+const baseMovementLoop = updateMovement;
 updateMovement = function() {
-    oldUpdateMovement();           // Check standard keyboard arrow logs
-    applyMobileVectorMovement();   // Check active touch data
+    baseMovementLoop();
+    applyMobileVectorMovement();
 };
