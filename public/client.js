@@ -602,3 +602,91 @@ updateMovement = function() {
     baseMovementLoop();
     applyMobileVectorMovement();
 };
+
+// MULTI-TRACK PLAYLIST ENGINE FOR CUSTOM MUSIC AUDIO
+const bgMusic = document.getElementById('bgMusicTrack');
+const audioMuteBtn = document.getElementById('audioMuteBtn');
+
+// 1. ADD YOUR CUSTOM SONG FILENAMES RIGHT HERE IN THIS LIST CONTAINER!
+// Drop your custom .mp3 files into public/audio/ and list their exact names here
+let playlistTracks = ["track1.mp3", "track2.mp3", "track3.mp3"];
+
+let currentTrackIndex = 0;
+let isMusicPlaying = false;
+
+// Randomizes the playlist array order so the game has a mixed radio shuffle layout
+function shufflePlaylist(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+function loadAndPlayTrack() {
+    if (!bgMusic || playlistTracks.length === 0) return;
+    
+    // Grab the active filename out of our track listing array matrix
+    const nextSongFile = playlistTracks[currentTrackIndex];
+    bgMusic.src = `/audio/${nextSongFile}`;
+    bgMusic.volume = 0.25; // Sets the music to a comfortable 25% background volume level
+    
+    bgMusic.play()
+        .then(() => {
+            isMusicPlaying = true;
+            if (audioMuteBtn) audioMuteBtn.innerText = `🔊 Playing: Track ${currentTrackIndex + 1}`;
+        })
+        .catch(err => {
+            // Catches standard browser auto-play blocker policies cleanly
+            console.log("Audio autoplay restricted. Awaiting a physical click on the mute button.");
+            isMusicPlaying = false;
+            if (audioMuteBtn) audioMuteBtn.innerText = "🎵 Music: OFF";
+        });
+}
+
+// Automatically jumps to the next song in line the exact second the active track ends
+if (bgMusic) {
+    bgMusic.addEventListener('ended', () => {
+        currentTrackIndex++;
+        // Wrap back around to the first song and re-shuffle if we reach the end of the list array
+        if (currentTrackIndex >= playlistTracks.length) {
+            currentTrackIndex = 0;
+            shufflePlaylist(playlistTracks);
+        }
+        loadAndPlayTrack();
+    });
+}
+
+function startGameMusicLoop() {
+    if (playlistTracks.length === 0) return;
+    shufflePlaylist(playlistTracks); // Mix up track order on start
+    currentTrackIndex = 0;
+    loadAndPlayTrack();
+}
+
+// Global button toggle handler wired straight to your index.html onclick properties
+window.toggleBackgroundMusic = function() {
+    if (!bgMusic) return;
+    
+    if (isMusicPlaying) {
+        bgMusic.pause();
+        isMusicPlaying = false;
+        if (audioMuteBtn) audioMuteBtn.innerText = "🎵 Music: OFF";
+    } else {
+        // Boot up the playlist stream if it hasn't loaded any track file source yet
+        if (!bgMusic.src) {
+            startGameMusicLoop();
+        } else {
+            bgMusic.play();
+            isMusicPlaying = true;
+            if (audioMuteBtn) audioMuteBtn.innerText = `🔊 Playing: Track ${currentTrackIndex + 1}`;
+        }
+    }
+};
+
+// Intercept your Enter Glyde's Paradise button click layout to initiate audio loops
+if (joinGameBtn) {
+    joinGameBtn.addEventListener('click', () => {
+        // Triggers the player with a 500ms delay to let server connections resolve cleanly first
+        setTimeout(startGameMusicLoop, 500);
+    });
+}
