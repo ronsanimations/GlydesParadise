@@ -520,10 +520,23 @@ if (joyBase) {
 function applyMobileVectorMovement() {
     if (!localPlayer || isTyping || (mobileVector.x === 0 && mobileVector.y === 0)) return;
     
-    const baseSpeed = 5;
-    localPlayer.x += mobileVector.x * baseSpeed;
-    localPlayer.y += mobileVector.y * baseSpeed;
+    // Calculate total length of the joystick thumb drag vector using Pythagorean theorem
+    let vectorLength = Math.sqrt(mobileVector.x * mobileVector.x + mobileVector.y * mobileVector.y);
     
+    let moveX = mobileVector.x;
+    let moveY = mobileVector.y;
+    
+    // SPEED CALIBRATION ENGINE: Clamp maximum length to 1.0 to perfectly match PC keyboard limits
+    if (vectorLength > 1.0) {
+        moveX = mobileVector.x / vectorLength;
+        moveY = mobileVector.y / vectorLength;
+    }
+    
+    const baseSpeed = 5; // Exactly matches your PC keyboard speed constant
+    localPlayer.x += moveX * baseSpeed;
+    localPlayer.y += moveY * baseSpeed;
+    
+    // Restrict movement within map boundaries
     localPlayer.x = Math.max(0, Math.min(WORLD_WIDTH - 32, localPlayer.x));
     localPlayer.y = Math.max(0, Math.min(WORLD_HEIGHT - 32, localPlayer.y));
     
