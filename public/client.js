@@ -452,17 +452,63 @@ function redrawPaintCanvasPreview() {
 }
 redrawPaintCanvasPreview();
 
-function handlePaintMove(e) {
+// Universal Paint Pointer Coordinates Converter for Both Mouse and Finger Touches
+function handlePaintInput(clientX, clientY) {
+    if (!paintCanvas) return;
     const rect = paintCanvas.getBoundingClientRect();
     const pixelScale = paintCanvas.width / PAINT_GRID_SIZE;
-    const colIdx = Math.floor((e.clientX - rect.left) / pixelScale);
-    const rowIdx = Math.floor((e.clientY - rect.top) / pixelScale);
+    
+    // Calculate exact pixel position relative to the canvas
+    const colIdx = Math.floor((clientX - rect.left) / pixelScale);
+    const rowIdx = Math.floor((clientY - rect.top) / pixelScale);
     
     if (colIdx >= 0 && colIdx < PAINT_GRID_SIZE && rowIdx >= 0 && rowIdx < PAINT_GRID_SIZE) {
-        multiLayerTextures[paintLayerSelect.value][rowIdx][colIdx] = brushColorPicker.value;
-        redrawPaintCanvasPreview();
+        const activeLayer = paintLayerSelect.value;
+        if (multiLayerTextures[activeLayer]) {
+            multiLayerTextures[activeLayer][rowIdx][colIdx] = brushColorPicker.value;
+            redrawPaintCanvasPreview();
+        }
     }
 }
+
+if (paintCanvas) {
+    // ---- DESKTOP MOUSE LISTENERS ----
+    paintCanvas.addEventListener('mousedown', (e) => { 
+        isDrawingOnCanvas = true; 
+        handlePaintInput(e.clientX, e.clientY); 
+    });
+    window.addEventListener('mouseup', () => { 
+        isDrawingOnCanvas = false; 
+    });
+    paintCanvas.addEventListener('mousemove', (e) => { 
+        if (isDrawingOnCanvas) handlePaintInput(e.clientX, e.clientY); 
+    });
+
+    // ---- MOBILE PHONE TOUCH LISTENERS ----
+    paintCanvas.addEventListener('touchstart', (e) => {
+        e.preventDefault(); // Prevents mobile page from scrolling/zooming
+        isDrawingOnCanvas = true;
+        const touch = e.touches[0];
+        if (touch) handlePaintInput(touch.clientX, touch.clientY);
+    }, { passive: false });
+
+    paintCanvas.addEventListener('touchmove', (e) => {
+        e.preventDefault(); // Prevents mobile page from scrolling/zooming
+        if (!isDrawingOnCanvas) return;
+        const touch = e.touches[0];
+        if (touch) handlePaintInput(touch.clientX, touch.clientY);
+    }, { passive: false });
+
+    window.addEventListener('touchend', () => { 
+        isDrawingOnCanvas = false; 
+    });
+}
+
+if (paintLayerSelect) paintLayerSelect.addEventListener('change', redrawPaintCanvasPreview);
+if (clearPaintBtn) clearPaintBtn.addEventListener('click', () => { 
+    setupDefaultPaintGrids(); 
+    redrawPaintCanvasPreview(); 
+});
 
 if (paintCanvas) {
     paintCanvas.addEventListener('mousedown', (e) => { isDrawingOnCanvas = true; handlePaintMove(e); });
