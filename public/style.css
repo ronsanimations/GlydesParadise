@@ -165,7 +165,10 @@ html, body {
     background-color: #1e1e1e; 
     padding: 12px; 
     border-radius: 8px; 
-    box-shadow: 0 10px 30px rgba(0,0,0,0.7); 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+    /* FIXED: Keep the desktop interface cleanly centered instead of stretching */
+    width: fit-content;
+    margin: 0 auto;
 }
 
 #game-container { 
@@ -173,6 +176,8 @@ html, body {
     display: flex; 
     flex-direction: column; 
     gap: 8px; 
+    /* FIXED: Force the container to match the exact 800px width of your canvas viewport */
+    width: 800px;
 }
 
 #gameCanvas { 
