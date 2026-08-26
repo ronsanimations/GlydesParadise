@@ -1,65 +1,163 @@
-html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    position: fixed; /* Completely locks the viewport on iOS and Android */
-    touch-action: none !important;
-    -webkit-overflow-scrolling: auto;
-    overscroll-behavior: none !important;
-    background-color: #1a1a1a;
-    font-family: sans-serif;
-    color: #fff;
+html, body { 
+    margin: 0; 
+    padding: 0; 
+    width: 100%; 
+    height: 100%; 
+    overflow: hidden; 
+    position: fixed; /* Completely locks the viewport on iOS and Android */ 
+    touch-action: none !important; 
+    -webkit-overflow-scrolling: auto; 
+    overscroll-behavior: none !important; 
+    background-color: #1a1a1a; 
+    font-family: sans-serif; 
+    color: #fff; 
 }
 
-#customizer-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: #111;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 100;
+#customizer-screen { 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100vw; 
+    height: 100vh; 
+    background-color: #111; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    z-index: 100; 
 }
 
-#customizer-box {
-    background-color: #252525;
-    padding: 20px;
-    border-radius: 8px;
-    border: 2px solid #444;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.7);
-    width: 520px;
-    box-sizing: border-box;
+#customizer-box { 
+    background-color: #252525; 
+    padding: 20px; 
+    border-radius: 8px; 
+    border: 2px solid #444; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 12px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.7); 
+    width: 520px; 
+    box-sizing: border-box; 
 }
 
-.customizer-split-layout { display: flex; gap: 20px; }
-.customizer-left { flex: 1; display: flex; flex-direction: column; gap: 12px; }
-.customizer-right {
-    flex: 1; background: #1a1a1a; padding: 12px; border-radius: 6px; 
-    border: 1px solid #333; display: flex; flex-direction: column; align-items: center; gap: 10px;
+.customizer-split-layout { 
+    display: flex; 
+    gap: 20px; 
 }
 
-#customizer-box h2 { margin: 0; text-align: center; font-size: 20px; border-bottom: 2px solid #333; padding-bottom: 6px; }
-.input-group { display: flex; flex-direction: column; gap: 5px; }
-.input-group input, #paintLayerSelect { padding: 8px; background: #111; border: 2px solid #444; border-radius: 4px; color: #fff; font-size: 15px; width: 100%; box-sizing: border-box; }
-.control-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+.customizer-left { 
+    flex: 1; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 12px; 
+}
 
-.selector-arrows { display: flex; align-items: center; gap: 10px; background-color: #111; border: 1px solid #444; border-radius: 4px; padding: 3px; }
-.selector-arrows button { background: none; border: none; color: #55ff55; font-size: 16px; cursor: pointer; padding: 2px 8px; }
-.selector-arrows span { font-family: monospace; font-weight: bold; font-size: 16px; width: 20px; text-align: center; }
+.customizer-right { 
+    flex: 1; 
+    background: #1a1a1a; 
+    padding: 12px; 
+    border-radius: 6px; 
+    border: 1px solid #333; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    gap: 10px; 
+}
 
-#paintCanvas { background-color: #222; border: 2px solid #55ff55; cursor: crosshair; image-rendering: pixelated; }
-.paint-btn-row { display: flex; gap: 10px; width: 100%; align-items: center; }
-.paint-btn-row input[type="color"] { width: 44px; height: 30px; border: none; cursor: pointer; background: none; }
-#clearPaintBtn, #joinGameBtn { background-color: #55ff55; color: #000; border: none; padding: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; }
-#clearPaintBtn { background-color: #ff5555; flex-grow: 1; }
+#customizer-box h2 { 
+    margin: 0; 
+    text-align: center; 
+    font-size: 20px; 
+    border-bottom: 2px solid #333; 
+    padding-bottom: 6px; 
+}
+
+.input-group { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 5px; 
+}
+
+.input-group input, #paintLayerSelect { 
+    padding: 8px; 
+    background: #111; 
+    border: 2px solid #444; 
+    border-radius: 4px; 
+    color: #fff; 
+    font-size: 15px; 
+    width: 100%; 
+    box-sizing: border-box; 
+}
+
+.control-row { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    font-size: 14px; 
+}
+
+.selector-arrows { 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    background-color: #111; 
+    border: 1px solid #444; 
+    border-radius: 4px; 
+    padding: 3px; 
+}
+
+.selector-arrows button { 
+    background: none; 
+    border: none; 
+    color: #55ff55; 
+    font-size: 16px; 
+    cursor: pointer; 
+    padding: 2px 8px; 
+}
+
+.selector-arrows span { 
+    font-family: monospace; 
+    font-weight: bold; 
+    font-size: 16px; 
+    width: 20px; 
+    text-align: center; 
+}
+
+#paintCanvas { 
+    background-color: #222; 
+    border: 2px solid #55ff55; 
+    cursor: crosshair; 
+    image-rendering: pixelated; 
+}
+
+.paint-btn-row { 
+    display: flex; 
+    gap: 10px; 
+    width: 100%; 
+    align-items: center; 
+}
+
+.paint-btn-row input[type="color"] { 
+    width: 44px; 
+    height: 30px; 
+    border: none; 
+    cursor: pointer; 
+    background: none; 
+}
+
+#clearPaintBtn, #joinGameBtn { 
+    background-color: #55ff55; 
+    color: #000; 
+    border: none; 
+    padding: 10px; 
+    font-weight: bold; 
+    border-radius: 4px; 
+    cursor: pointer; 
+}
+
+#clearPaintBtn { 
+    background-color: #ff5555; 
+    flex-grow: 1; 
+}
 
 #ui-wrapper { 
     display: flex; 
@@ -100,17 +198,19 @@ html, body {
     border: 1px solid #333; 
 }
 
-#mobileChatToggleBtn { display: none; }
+#mobileChatToggleBtn { 
+    display: none; 
+}
 
 /* Chat input bar */
-#chatForm {
-    display: flex;
-    gap: 6px;
-    width: 100%;
+#chatForm { 
+    display: flex; 
+    gap: 6px; 
+    width: 100%; 
 }
 
 #chatInput { 
-    flex: 1;
+    flex: 1; 
     padding: 8px 10px; 
     background-color: #111; 
     border: 2px solid #444; 
@@ -120,16 +220,18 @@ html, body {
     outline: none; 
 }
 
-#chatInput:focus { border-color: #55ff55; }
+#chatInput:focus { 
+    border-color: #55ff55; 
+}
 
-#chatSendBtn {
-    background-color: #333;
-    color: #55ff55;
-    border: 2px solid #444;
-    border-radius: 4px;
-    padding: 0 14px;
-    font-weight: bold;
-    cursor: pointer;
+#chatSendBtn { 
+    background-color: #333; 
+    color: #55ff55; 
+    border: 2px solid #444; 
+    border-radius: 4px; 
+    padding: 0 14px; 
+    font-weight: bold; 
+    cursor: pointer; 
 }
 
 #chat-log-box { 
@@ -143,27 +245,45 @@ html, body {
     box-sizing: border-box; 
 }
 
-#chat-log-box h3 { margin: 0 0 8px 0; font-size: 15px; border-bottom: 1px solid #333; padding-bottom: 4px; }
-#chatLog { flex-grow: 1; overflow-y: auto; font-size: 13px; line-height: 1.4; display: flex; flex-direction: column; gap: 6px; height: 600px; }
-.chat-msg { word-break: break-word; }
-
-/* Bottom Joystick Dock Bar */
-#mobile-controls-bar {
-    display: none;
-    background: #181818;
-    border: 1px solid #333;
-    border-radius: 6px;
-    padding: 10px;
-    justify-content: space-between;
-    align-items: center;
+#chat-log-box h3 { 
+    margin: 0 0 8px 0; 
+    font-size: 15px; 
+    border-bottom: 1px solid #333; 
+    padding-bottom: 4px; 
 }
 
-#joystick-zone {
-    width: 100px;
-    height: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+#chatLog { 
+    flex-grow: 1; 
+    overflow-y: auto; 
+    font-size: 13px; 
+    line-height: 1.4; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 6px; 
+    height: 600px; 
+}
+
+.chat-msg { 
+    word-break: break-word; 
+}
+
+/* Bottom Joystick Dock Bar */
+#mobile-controls-bar { 
+    display: none; 
+    background: #181818; 
+    border: 1px solid #333; 
+    border-radius: 6px; 
+    padding: 10px; 
+    justify-content: space-between; 
+    align-items: center; 
+}
+
+#joystick-zone { 
+    width: 100px; 
+    height: 100px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
 }
 
 #joystick-base { 
@@ -175,7 +295,7 @@ html, body {
     display: flex; 
     justify-content: center; 
     align-items: center; 
-    touch-action: none;
+    touch-action: none; 
 }
 
 #joystick-stick { 
@@ -184,77 +304,85 @@ html, body {
     background-color: rgba(85, 255, 85, 0.8); 
     border-radius: 50%; 
     box-shadow: 0 2px 6px rgba(0,0,0,0.5); 
-    pointer-events: none;
+    pointer-events: none; 
 }
 
-#mobile-hint {
-    font-size: 12px;
-    color: #777;
-    margin-right: 15px;
+#mobile-hint { 
+    font-size: 12px; 
+    color: #777; 
+    margin-right: 15px; 
 }
 
 /* Mobile Screen Layout Rules */
-@media (max-width: 850px) {
-    body {
-        align-items: flex-start;
-        overflow-y: auto;
-    }
+@media (max-width: 850px) { 
+    body { 
+        align-items: flex-start; 
+        overflow: hidden !important; /* FIXED: Block mobile site background scrolling */
+    } 
     
     #ui-wrapper { 
         flex-direction: column; 
         width: 100vw; 
-        padding: 6px; 
-        box-sizing: border-box;
-    }
+        padding: 10px 6px; /* Added spacing to shift game layouts down */
+        box-sizing: border-box; 
+    } 
     
+    #game-container {
+        margin-top: 25px; /* FIXED: Shifts active play arena down from screen boundary edges */
+    }
+
     #customizer-box { 
         width: 94vw; 
         max-height: 92vh; 
         overflow-y: auto; 
         padding: 12px; 
-    }
+    } 
     
     .customizer-split-layout { 
         flex-direction: column; 
         gap: 10px; 
-    }
-
+    } 
+    
     #gameCanvas { 
         width: 100% !important; 
         height: auto !important; 
-    }
+    } 
     
     #mobileChatToggleBtn { 
         display: block; 
         background: #252525; 
         color: #55ff55; 
-        border: 1px solid #444; 
-        padding: 6px; 
+        border: 2px solid #55ff55; /* Highlighted border to stand out cleanly */
+        padding: 10px; 
         font-weight: bold; 
         border-radius: 4px; 
-        font-size: 12px; 
+        font-size: 13px; 
         cursor: pointer; 
-    }
-
+        margin-bottom: 5px;
+    } 
+    
     #chat-log-box { 
         position: fixed; 
         right: 8px; 
-        top: 50px; 
+        top: 85px; /* Adjusted so it drops cleanly beneath the button layout */
         width: 260px; 
         height: 250px; 
         z-index: 80; 
         display: none; 
         background-color: rgba(17, 17, 17, 0.95); 
-    }
+    } 
     
-    #chatLog { height: 200px; }
-
+    #chatLog { 
+        height: 200px; 
+    } 
+    
     #mobile-controls-bar { 
         display: flex; 
-    }
+        margin-top: 10px; /* Positions virtual controls bar neatly below play boundary views */
+    } 
 }
 
-#customizer-screen, #paintCanvas {
-    touch-action: none !important;
-    overscroll-behavior: none !important;
+#customizer-screen, #paintCanvas { 
+    touch-action: none !important; 
+    overscroll-behavior: none !important; 
 }
