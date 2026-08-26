@@ -634,6 +634,7 @@ let customPlaylistTracks = [
     "Soda Pop.mp3"
     "Daydreams.mp3"
     "Frisky!.mp3"
+    "Jackpot!.mp3"
 ]; 
 let customTrackIndex = 0;
 let customMusicActive = false;
