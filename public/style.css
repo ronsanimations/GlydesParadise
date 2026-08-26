@@ -251,3 +251,8 @@ body {
         display: flex; 
     }
 }
+
+#customizer-screen, #paintCanvas {
+    touch-action: none !important;
+    overscroll-behavior: none !important;
+}
