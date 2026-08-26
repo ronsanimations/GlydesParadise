@@ -631,6 +631,7 @@ let customPlaylistTracks = [
     "Headpats.mp3"
     "Mystical.mp3"
     "Kittens!.mp3"
+    "Soda Pop.mp3"
 ]; 
 let customTrackIndex = 0;
 let customMusicActive = false;
