@@ -402,3 +402,76 @@ window.addEventListener('mouseup', () => { isDrawingOnCanvas = false; });
 paintCanvas.addEventListener('mousemove', (e) => { if (isDrawingOnCanvas) handlePaintMove(e); });
 paintLayerSelect.addEventListener('change', redrawPaintCanvasPreview);
 clearPaintBtn.addEventListener('click', () => { setupDefaultPaintGrids(); redrawPaintCanvasPreview(); });
+
+// Virtual Touch Joystick Mathematics Engine
+let joystickActive = false;
+let joystickStartPos = { x: 0, y: 0 };
+let mobileVector = { x: 0, y: 0 }; // Stores mobile walking speeds (-1 to 1)
+
+const joyZone = document.getElementById('joystick-zone');
+const joyBase = document.getElementById('joystick-base');
+const joyStick = document.getElementById('joystick-stick');
+
+joyBase.addEventListener('touchstart', (e) => {
+    joystickActive = true;
+    const touch = e.touches[0];
+    const rect = joyBase.getBoundingClientRect();
+    // Establish absolute center of our joystick circle
+    joystickStartPos = {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2
+    };
+});
+
+window.addEventListener('touchmove', (e) => {
+    if (!joystickActive) return;
+    
+    const touch = e.touches[0];
+    // Calculate distance between touch finger point and stick anchor center
+    let deltaX = touch.clientX - joystickStartPos.x;
+    let deltaY = touch.clientY - joystickStartPos.y;
+    let distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    
+    const maxRadius = 40; // Pixels thumb stick can stretch outward
+    if (distance > maxRadius) {
+        deltaX = (deltaX / distance) * maxRadius;
+        deltaY = (deltaY / distance) * maxRadius;
+        distance = maxRadius;
+    }
+    
+    // Visually shift thumb-stick circle via CSS transformations
+    joyStick.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+    
+    // Normalize vectors between -1.0 and 1.0 for player movement
+    mobileVector.x = deltaX / maxRadius;
+    mobileVector.y = deltaY / maxRadius;
+});
+
+window.addEventListener('touchend', () => {
+    if (!joystickActive) return;
+    joystickActive = false;
+    joyStick.style.transform = 'translate(0px, 0px)'; // Snap center back
+    mobileVector = { x: 0, y: 0 }; // Freeze movement instantly
+});
+
+// Update updateMovement function automatically inside update clock loop thread
+function applyMobileVectorMovement() {
+    if (!localPlayer || isTyping || (mobileVector.x === 0 && mobileVector.y === 0)) return;
+    
+    const baseSpeed = 5;
+    localPlayer.x += mobileVector.x * baseSpeed;
+    localPlayer.y += mobileVector.y * baseSpeed;
+    
+    // Restrict movement within map boundaries
+    localPlayer.x = Math.max(0, Math.min(WORLD_WIDTH - 32, localPlayer.x));
+    localPlayer.y = Math.max(0, Math.min(WORLD_HEIGHT - 32, localPlayer.y));
+    
+    socket.emit('playerMovement', { x: localPlayer.x, y: localPlayer.y });
+}
+
+// Intercept original movement thread loop to run our touch physics equations
+const oldUpdateMovement = updateMovement;
+updateMovement = function() {
+    oldUpdateMovement();           // Check standard keyboard arrow logs
+    applyMobileVectorMovement();   // Check active touch data
+};
