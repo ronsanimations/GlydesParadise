@@ -661,7 +661,8 @@ let customPlaylistTracks = [
     "Donut Shop.mp3",
     "Sugar Rush.mp3",
     "Voxels.mp3",
-    "Sugar Tree.mp3"
+    "Sugar Tree.mp3",
+    "Animal Crossing Kinda Song idk.mp3"
 ]; 
 let customTrackIndex = 0;
 let customMusicActive = false;
