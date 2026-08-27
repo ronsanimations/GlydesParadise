@@ -636,7 +636,8 @@ let customPlaylistTracks = [
     "Jackpot!.mp3",
     "Pixel Party.mp3",
     "Heart of Ice VIP.mp3",
-    "Sleepover!.mp3"
+    "Sleepover!.mp3",
+    "Game On!.mp3"
 ]; 
 let customTrackIndex = 0;
 let customMusicActive = false;
