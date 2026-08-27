@@ -663,7 +663,8 @@ let customPlaylistTracks = [
     "Voxels.mp3",
     "Sugar Tree.mp3",
     "Animal Crossing Kinda Song idk.mp3",
-    "Bubblegum.mp3"
+    "Bubblegum.mp3",
+    "POV_ You're Playing on your DS at midnight.mp3"
 ]; 
 let customTrackIndex = 0;
 let customMusicActive = false;
