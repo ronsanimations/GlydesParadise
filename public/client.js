@@ -647,7 +647,8 @@ let customPlaylistTracks = [
     "Bittersweet.mp3",
     "Game Night.mp3",
     "Blossom.mp3",
-    "POV_ You're scrolling through the eShop.mp3"
+    "POV_ You're scrolling through the eShop.mp3",
+    "Astral.mp3"
 ]; 
 let customTrackIndex = 0;
 let customMusicActive = false;
