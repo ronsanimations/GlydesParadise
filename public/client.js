@@ -651,7 +651,8 @@ let customPlaylistTracks = [
     "Astral.mp3",
     "Journey.mp3",
     "Hyper.mp3",
-    "Ice Cream.mp3"
+    "Ice Cream.mp3",
+    "Infinite.mp3"
 ]; 
 let customTrackIndex = 0;
 let customMusicActive = false;
