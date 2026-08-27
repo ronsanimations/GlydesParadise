@@ -640,7 +640,8 @@ let customPlaylistTracks = [
     "Game On!.mp3",
     "Midnight Coffee.mp3",
     "Twilight.mp3",
-    "Aurora.mp3"
+    "Aurora.mp3",
+    "Level Up!.mp3"
 ]; 
 let customTrackIndex = 0;
 let customMusicActive = false;
