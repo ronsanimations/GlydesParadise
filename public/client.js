@@ -645,7 +645,8 @@ let customPlaylistTracks = [
     "Milkshake.mp3",
     "Arcade Fun.mp3",
     "Bittersweet.mp3",
-    "Game Night.mp3"
+    "Game Night.mp3",
+    "Blossom.mp3"
 ]; 
 let customTrackIndex = 0;
 let customMusicActive = false;
