@@ -627,7 +627,15 @@ let customPlaylistTracks = [
     "Tacocat.mp3",
     "Til Ya Meow.mp3",
     "Trick or BASS.mp3",
-    "Yum!.mp3"
+    "Yum!.mp3",
+    "Headpats.mp3",
+    "Mystical.mp3",
+    "Soda Pop.mp3",
+    "Daydreams.mp3",
+    "Frisky!.mp3",
+    "Jackpot!.mp3",
+    "Pixel Party.mp3",
+    "Heart of Ice VIP.mp3"
 ]; 
 let customTrackIndex = 0;
 let customMusicActive = false;
