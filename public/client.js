@@ -650,7 +650,8 @@ let customPlaylistTracks = [
     "POV_ You're scrolling through the eShop.mp3",
     "Astral.mp3",
     "Journey.mp3",
-    "Hyper.mp3"
+    "Hyper.mp3",
+    "Ice Cream.mp3"
 ]; 
 let customTrackIndex = 0;
 let customMusicActive = false;
