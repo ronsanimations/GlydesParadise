@@ -638,7 +638,8 @@ let customPlaylistTracks = [
     "Heart of Ice VIP.mp3",
     "Sleepover!.mp3",
     "Game On!.mp3",
-    "Midnight Coffee.mp3"
+    "Midnight Coffee.mp3",
+    "Twilight.mp3"
 ]; 
 let customTrackIndex = 0;
 let customMusicActive = false;
