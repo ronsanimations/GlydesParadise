@@ -653,7 +653,8 @@ let customPlaylistTracks = [
     "Hyper.mp3",
     "Ice Cream.mp3",
     "Infinite.mp3",
-    "Dreamscape.mp3"
+    "Dreamscape.mp3",
+    "Dopamine Ray (ft. theWyattchannel).mp3"
 ]; 
 let customTrackIndex = 0;
 let customMusicActive = false;
