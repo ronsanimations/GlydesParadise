@@ -656,7 +656,8 @@ let customPlaylistTracks = [
     "Dreamscape.mp3",
     "Dopamine Ray (ft. theWyattchannel).mp3",
     "Silly Doodles.mp3",
-    "Starlight.mp3"
+    "Starlight.mp3",
+    "Slushie.mp3"
 ]; 
 let customTrackIndex = 0;
 let customMusicActive = false;
